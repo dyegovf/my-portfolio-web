@@ -14,7 +14,7 @@ export default function Home() {
   
     <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "0.5rem", padding: "1rem" }}>      
       {sections.map(table => (  
-        <section key={table}> {table} </section>
+        <section key={table.id}> {table.label} </section>
       ))}
     </div>     
 
