@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import HeroSection from '../components/HeroSection';
+import HomeCard from "../components/HomeCard";
 
 export default function Home() {
   const [sections, setSections] = useState([]);
@@ -11,13 +13,14 @@ export default function Home() {
   }, []);
 
   return (
-  
-    <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "0.5rem", padding: "1rem" }}>      
-      {sections.map(table => (  
-        <section key={table.id}> {table.label} </section>
-      ))}
-    </div>     
-
-   
+    <>
+      <HeroSection />
+      <div className="home-container">
+        {sections.map(section => (
+          <HomeCard key={section.id} section={section} />
+        ))}
+      </div>
+    </>
   );
 }
+

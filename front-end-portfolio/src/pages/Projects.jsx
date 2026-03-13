@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import ProjectCard from "../components/ProjectCard";
 
 function Projects() {
   const [projects, setProjects] = useState([]);
@@ -11,16 +12,13 @@ function Projects() {
   }, []);
 
   return (
-    <div>
+    <div className="projects-container">
       <h1>Meus Projetos</h1>
-      <ul>
+      <div className="projects-grid">
         {projects.map(p => (
-          <li key={p.id}>
-            {p.project_name}
-            <br />
-          </li>
+          <ProjectCard key={p.id} project={p} />
         ))}
-      </ul>
+      </div>
     </div>
   );
 }
