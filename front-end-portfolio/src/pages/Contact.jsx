@@ -1,9 +1,12 @@
-import React from 'react'
+import React from 'react';
+import ContactCard from '../components/ContactCard';
 
 function Contact() {
   return (
-    <div>Contact</div>
-  )
+    <section className="contact-section">
+        <ContactCard />
+    </section>
+  );
 }
 
-export default Contact
+export default Contact;

@@ -6,13 +6,15 @@ exports.getTables = () => {
         db.query('SHOW TABLES', (err, results) => {
             if (err) return reject (err)
             
-            const tables = results.map(r =>{
-                const tableName = Object.values(r)[0]
-                return {id: tableName, label: labels[tableName] || tableName}
-                
+            const tables = results.map(r => {
+                const tableName = Object.values(r)[0];
+                return {
+                    id: tableName,
+                    label: labels[tableName] ? labels[tableName].label : tableName,
+                    description: labels[tableName] ? labels[tableName].description : "No description available"
+                }
             });
             resolve(tables);
         });
-    });
-    
+    });    
 }

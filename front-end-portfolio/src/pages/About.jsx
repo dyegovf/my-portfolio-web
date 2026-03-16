@@ -1,9 +1,15 @@
-import React from 'react'
+import React from 'react';
+import settings from '../settings.json';
 
 function About() {
+  const { title, description } = settings.about;
+
   return (
-    <div>About</div>
-  )
+    <section className="about">
+      <h2>{title}</h2>
+      <p>{description}</p>
+    </section>
+  );
 }
 
-export default About
+export default About;

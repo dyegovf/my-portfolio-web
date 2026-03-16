@@ -16,6 +16,7 @@ import Experience from "./pages/Experience";
 import Home from "./pages/Home";
 import ProjectDetail from "./pages/ProjectDetail";
 import Projects from "./pages/Projects";
+import Skills from "./pages/Skills";
 
 function useIsMobile() {
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768)
@@ -34,6 +35,12 @@ const rootRoute = createRootRoute({
     const isMobile = useIsMobile()
     return isMobile ? <MobileLayout /> : <DesktopLayout />
   },
+})
+
+const homeRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/",
+  component: Home,
 })
 
 const aboutRoute = createRoute({
@@ -60,12 +67,6 @@ const experienceRoute = createRoute({
   component: Experience,
 })
 
-const homeRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: "/",
-  component: Home,
-})
-
 const projectsRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "projects",
@@ -78,6 +79,12 @@ const projectDetailRoute = createRoute({
   component: ProjectDetail,
 })
 
+const skillsRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "skills",
+  component: Skills,
+})
+
 const routeTree = rootRoute.addChildren([
   aboutRoute,
   contactRoute,
@@ -85,7 +92,8 @@ const routeTree = rootRoute.addChildren([
   experienceRoute,
   homeRoute,
   projectsRoute,
-  projectDetailRoute  
+  projectDetailRoute,
+  skillsRoute
 ])
 
 export const router = createRouter({

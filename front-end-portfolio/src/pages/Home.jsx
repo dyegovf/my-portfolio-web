@@ -8,7 +8,9 @@ export default function Home() {
   useEffect(() => {
     fetch("http://localhost:3000/tables")
       .then(res => res.json())
-      .then(data => setSections(data))
+      .then(data => {
+        setSections(data)        
+      })
       .catch(err => console.error("Erro ao buscar tabelas:", err));
   }, []);
 
