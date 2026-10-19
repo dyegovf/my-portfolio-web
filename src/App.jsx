@@ -12,6 +12,7 @@ import { ProjectsSection } from "./components/projects/ProjectsSection";
 import { ExperienceSection } from "./components/experience/ExperienceSection";
 import { EducationSection } from "./components/education/EducationSection";
 import { ContactSection } from "./components/contact/ContactSection";
+import { WhatsAppButton } from "./components/common/WhatsAppButton";
 
 export default function App() {
   const { portfolio, loading, error } = usePortfolio();
@@ -51,6 +52,7 @@ export default function App() {
       </main>
 
       <Footer profile={portfolio.profile} />
+      <WhatsAppButton />
     </div>
   );
 }
