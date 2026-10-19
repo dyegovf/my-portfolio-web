@@ -8,31 +8,66 @@ const initialForm = {
   message_text: "",
 };
 
+function validateForm(form) {
+  const errors = {};
+
+  if (!form.sender_name.trim()) {
+    errors.sender_name = "Informe seu nome.";
+  }
+
+  if (!form.sender_email.trim()) {
+    errors.sender_email = "Informe seu e-mail.";
+  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.sender_email)) {
+    errors.sender_email = "Informe um e-mail válido.";
+  }
+
+  if (!form.subject.trim()) {
+    errors.subject = "Informe o assunto.";
+  }
+
+  if (!form.message_text.trim()) {
+    errors.message_text = "Informe sua mensagem.";
+  }
+
+  return errors;
+}
+
 export function ContactForm() {
   const [form, setForm] = useState(initialForm);
+  const [errors, setErrors] = useState({});
   const [status, setStatus] = useState("idle");
 
   function handleChange(event) {
-    setForm({
-      ...form,
-      [event.target.name]: event.target.value,
-    });
+    const { name, value } = event.target;
+
+    setForm((currentForm) => ({
+      ...currentForm,
+      [name]: value,
+    }));
+
+    setErrors((currentErrors) => ({
+      ...currentErrors,
+      [name]: undefined,
+    }));
+
+    if (status !== "idle") {
+      setStatus("idle");
+    }
   }
 
   async function handleSubmit(event) {
     event.preventDefault();
 
-    if (
-      !form.sender_name ||
-      !form.sender_email ||
-      !form.subject ||
-      !form.message_text
-    ) {
-      setStatus("error");
+    const validationErrors = validateForm(form);
+
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      setStatus("validation_error");
       return;
     }
 
     try {
+      setErrors({});
       setStatus("loading");
 
       await sendContactMessage(form);
@@ -40,67 +75,135 @@ export function ContactForm() {
       setForm(initialForm);
       setStatus("success");
     } catch (error) {
-      console.error(error);
-      setStatus("error");
+      console.error("Erro ao enviar mensagem:", error);
+      setStatus("submit_error");
     }
   }
+
+  const isSubmitting = status === "loading";
 
   return (
     <form
       onSubmit={handleSubmit}
-      className="space-y-4 p-6 rounded-2xl border border-slate-800 bg-slate-900"
+      className="space-y-4 rounded-2xl border border-slate-800 bg-slate-900 p-6"
+      noValidate
     >
-      <input
-        name="sender_name"
-        value={form.sender_name}
-        onChange={handleChange}
-        placeholder="Seu nome"
-        className="w-full px-4 py-3 rounded-lg bg-slate-950 border border-slate-800"
-      />
+      <div>
+        <label
+          htmlFor="sender_name"
+          className="mb-1.5 block text-sm font-medium text-slate-300"
+        >
+          Seu nome
+        </label>
 
-      <input
-        name="sender_email"
-        type="email"
-        value={form.sender_email}
-        onChange={handleChange}
-        placeholder="Seu e-mail"
-        className="w-full px-4 py-3 rounded-lg bg-slate-950 border border-slate-800"
-      />
+        <input
+          id="sender_name"
+          name="sender_name"
+          value={form.sender_name}
+          onChange={handleChange}
+          placeholder="Digite seu nome"
+          className={`w-full rounded-lg border bg-slate-950 px-4 py-3 text-sm text-slate-100 outline-none transition placeholder:text-slate-500 focus:border-indigo-500 ${
+            errors.sender_name ? "border-red-500" : "border-slate-800"
+          }`}
+        />
 
-      <input
-        name="subject"
-        value={form.subject}
-        onChange={handleChange}
-        placeholder="Assunto"
-        className="w-full px-4 py-3 rounded-lg bg-slate-950 border border-slate-800"
-      />
+        {errors.sender_name && (
+          <p className="mt-1 text-xs text-red-400">{errors.sender_name}</p>
+        )}
+      </div>
 
-      <textarea
-        name="message_text"
-        rows="5"
-        value={form.message_text}
-        onChange={handleChange}
-        placeholder="Mensagem"
-        className="w-full px-4 py-3 rounded-lg bg-slate-950 border border-slate-800"
-      />
+      <div>
+        <label
+          htmlFor="sender_email"
+          className="mb-1.5 block text-sm font-medium text-slate-300"
+        >
+          Seu e-mail
+        </label>
+
+        <input
+          id="sender_email"
+          name="sender_email"
+          type="email"
+          value={form.sender_email}
+          onChange={handleChange}
+          placeholder="voce@exemplo.com"
+          className={`w-full rounded-lg border bg-slate-950 px-4 py-3 text-sm text-slate-100 outline-none transition placeholder:text-slate-500 focus:border-indigo-500 ${
+            errors.sender_email ? "border-red-500" : "border-slate-800"
+          }`}
+        />
+
+        {errors.sender_email && (
+          <p className="mt-1 text-xs text-red-400">{errors.sender_email}</p>
+        )}
+      </div>
+
+      <div>
+        <label
+          htmlFor="subject"
+          className="mb-1.5 block text-sm font-medium text-slate-300"
+        >
+          Assunto
+        </label>
+
+        <input
+          id="subject"
+          name="subject"
+          value={form.subject}
+          onChange={handleChange}
+          placeholder="Como posso ajudar?"
+          className={`w-full rounded-lg border bg-slate-950 px-4 py-3 text-sm text-slate-100 outline-none transition placeholder:text-slate-500 focus:border-indigo-500 ${
+            errors.subject ? "border-red-500" : "border-slate-800"
+          }`}
+        />
+
+        {errors.subject && (
+          <p className="mt-1 text-xs text-red-400">{errors.subject}</p>
+        )}
+      </div>
+
+      <div>
+        <label
+          htmlFor="message_text"
+          className="mb-1.5 block text-sm font-medium text-slate-300"
+        >
+          Mensagem
+        </label>
+
+        <textarea
+          id="message_text"
+          name="message_text"
+          rows="5"
+          value={form.message_text}
+          onChange={handleChange}
+          placeholder="Escreva sua mensagem..."
+          className={`w-full resize-y rounded-lg border bg-slate-950 px-4 py-3 text-sm text-slate-100 outline-none transition placeholder:text-slate-500 focus:border-indigo-500 ${
+            errors.message_text ? "border-red-500" : "border-slate-800"
+          }`}
+        />
+
+        {errors.message_text && (
+          <p className="mt-1 text-xs text-red-400">{errors.message_text}</p>
+        )}
+      </div>
 
       <button
         type="submit"
-        disabled={status === "loading"}
-        className="w-full py-3 rounded-lg bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50"
+        disabled={isSubmitting}
+        className="w-full rounded-lg bg-indigo-600 py-3 font-semibold text-white transition hover:bg-indigo-500 disabled:cursor-not-allowed disabled:opacity-50"
       >
-        {status === "loading" ? "Enviando..." : "Enviar mensagem"}
+        {isSubmitting ? "Enviando..." : "Enviar mensagem"}
       </button>
 
       {status === "success" && (
-        <p className="text-sm text-emerald-400">
-          Mensagem enviada com sucesso.
+        <p className="rounded-lg bg-emerald-500/10 p-3 text-sm text-emerald-400">
+          Mensagem enviada com sucesso. Obrigado pelo contato!
         </p>
       )}
 
-      {status === "error" && (
-        <p className="text-sm text-red-400">
-          Preencha todos os campos ou tente novamente.
+      {status === "submit_error" && (
+        <p className="rounded-lg bg-red-500/10 p-3 text-sm text-red-400">
+          Não foi possível enviar sua mensagem. Tente novamente em alguns
+          instantes.
         </p>
       )}
     </form>

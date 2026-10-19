@@ -1,55 +1,203 @@
 import { useMemo, useState } from "react";
-import { ExternalLink, X } from "lucide-react";
+import { CalendarDays, ExternalLink, X } from "lucide-react";
 import { FaGithub } from "react-icons/fa";
 
 import { SectionTitle } from "../common/SectionTitle";
 
-export function ProjectsSection({ projects }) {
+function formatDate(date) {
+  if (!date) {
+    return null;
+  }
+
+  const [year, month, day] = date.split("-");
+
+  return new Intl.DateTimeFormat("pt-BR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  }).format(new Date(Number(year), Number(month) - 1, Number(day)));
+}
+
+function formatPeriod(startDate, endDate) {
+  const start = formatDate(startDate);
+  const end = endDate ? formatDate(endDate) : "Atual";
+
+  if (!start) {
+    return null;
+  }
+
+  return `${start} - ${end}`;
+}
+
+function getStatusLabel(status) {
+  const labels = {
+    completed: "Concluído",
+    in_progress: "Em andamento",
+    planned: "Planejado",
+  };
+
+  return labels[status] || status || "Não informado";
+}
+
+function getStatusClass(status) {
+  const classes = {
+    completed: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
+    in_progress: "bg-amber-500/10 text-amber-400 border-amber-500/20",
+    planned: "bg-blue-500/10 text-blue-400 border-blue-500/20",
+  };
+
+  return (
+    classes[status] || "bg-slate-500/10 text-slate-400 border-slate-500/20"
+  );
+}
+
+export function ProjectsSection({ projects = [] }) {
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("Todos");
   const [selectedProject, setSelectedProject] = useState(null);
 
-  const categories = [
-    "Todos",
-    ...new Set(projects.map((project) => project.category)),
-  ];
+  const categories = useMemo(() => {
+    const uniqueCategories = [
+      ...new Set(projects.map((project) => project.category).filter(Boolean)),
+    ];
+
+    return ["Todos", ...uniqueCategories];
+  }, [projects]);
 
   const filteredProjects = useMemo(() => {
-    const query = search.toLowerCase();
+    const query = search.trim().toLowerCase();
 
     return projects.filter((project) => {
       const matchesCategory =
         category === "Todos" || project.category === category;
 
-      const technologies = project.technologies
+      const technologyText = (project.technologies || [])
         .map((technology) => technology.name)
+        .join(" ");
+
+      const searchableText = [
+        project.title,
+        project.short_description,
+        project.long_description,
+        project.category,
+        technologyText,
+      ]
+        .filter(Boolean)
         .join(" ")
         .toLowerCase();
 
-      const matchesSearch =
-        project.title.toLowerCase().includes(query) ||
-        project.short_description.toLowerCase().includes(query) ||
-        technologies.includes(query);
+      const matchesSearch = !query || searchableText.includes(query);
 
       return matchesCategory && matchesSearch;
     });
   }, [projects, search, category]);
 
+  const featuredProjects = filteredProjects.filter(
+    (project) => project.featured,
+  );
+
+  const regularProjects = filteredProjects.filter(
+    (project) => !project.featured,
+  );
+
+  function renderProjectCard(project) {
+    const period = formatPeriod(project.start_date, project.end_date);
+
+    return (
+      <article
+        key={project.id}
+        className="flex flex-col overflow-hidden rounded-2xl border border-slate-800 bg-slate-900 transition hover:border-indigo-500/50"
+      >
+        <div className="flex min-h-32 flex-col justify-between bg-gradient-to-br from-indigo-900 to-slate-900 p-4">
+          <div className="flex items-start justify-between gap-3">
+            <span className="w-fit rounded-full bg-black/30 px-2.5 py-1 text-xs text-indigo-200">
+              {project.category || "Projeto"}
+            </span>
+
+            {project.featured && (
+              <span className="rounded-full border border-indigo-400/30 bg-indigo-500/20 px-2.5 py-1 text-[10px] font-semibold text-indigo-200">
+                Destaque
+              </span>
+            )}
+          </div>
+
+          {period && (
+            <div className="flex items-center gap-1.5 text-xs text-slate-300">
+              <CalendarDays className="h-3.5 w-3.5" />
+              {period}
+            </div>
+          )}
+        </div>
+
+        <div className="flex flex-1 flex-col p-5">
+          <div className="flex items-start justify-between gap-3">
+            <h3 className="font-bold text-slate-100">{project.title}</h3>
+
+            <span
+              className={`shrink-0 rounded-full border px-2 py-1 text-[10px] font-semibold ${getStatusClass(
+                project.status,
+              )}`}
+            >
+              {getStatusLabel(project.status)}
+            </span>
+          </div>
+
+          <p className="mt-3 flex-1 text-sm leading-relaxed text-slate-400">
+            {project.short_description}
+          </p>
+
+          <div className="mt-4 flex flex-wrap gap-2">
+            {(project.technologies || []).map((technology) => (
+              <span
+                key={technology.id}
+                className="rounded-md bg-slate-800 px-2 py-1 text-xs text-slate-300"
+              >
+                {technology.name}
+              </span>
+            ))}
+          </div>
+
+          <div className="mt-5 flex flex-wrap items-center gap-3">
+            <button
+              type="button"
+              onClick={() => setSelectedProject(project)}
+              className="rounded-lg bg-indigo-600 px-3 py-2 text-sm font-semibold text-white transition hover:bg-indigo-500"
+            >
+              Ver detalhes
+            </button>
+
+            {project.demo_url && (
+              <a
+                href={project.demo_url}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-1.5 text-sm font-semibold text-indigo-400 transition hover:text-indigo-300"
+              >
+                <ExternalLink className="h-4 w-4" />
+                Ver aplicação
+              </a>
+            )}
+          </div>
+        </div>
+      </article>
+    );
+  }
+
   return (
-    <section id="projects" className="space-y-8">
+    <section id="projects" className="scroll-mt-24 space-y-8">
       <SectionTitle eyebrow="Trabalhos selecionados" title="Projetos" />
 
-      <div className="flex flex-col md:flex-row gap-4 justify-between">
+      <div className="flex flex-col justify-between gap-4 md:flex-row">
         <div className="flex flex-wrap gap-2">
           {categories.map((item) => (
             <button
               key={item}
               type="button"
               onClick={() => setCategory(item)}
-              className={`px-3 py-2 rounded-lg text-xs ${
+              className={`rounded-lg px-3 py-2 text-xs transition ${
                 category === item
                   ? "bg-indigo-600 text-white"
-                  : "bg-slate-800 text-slate-300"
+                  : "bg-slate-800 text-slate-300 hover:bg-slate-700"
               }`}
             >
               {item}
@@ -62,92 +210,136 @@ export function ProjectsSection({ projects }) {
           value={search}
           onChange={(event) => setSearch(event.target.value)}
           placeholder="Buscar projeto..."
-          className="px-4 py-2 rounded-lg bg-slate-900 border border-slate-800 text-sm"
+          className="rounded-lg border border-slate-800 bg-slate-900 px-4 py-2 text-sm text-slate-100 outline-none transition placeholder:text-slate-500 focus:border-indigo-500"
         />
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-        {filteredProjects.map((project) => (
-          <article
-            key={project.id}
-            className="rounded-2xl border border-slate-800 bg-slate-900 overflow-hidden"
+      {filteredProjects.length === 0 && (
+        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-8 text-center text-sm text-slate-400">
+          Nenhum projeto encontrado para os filtros informados.
+        </div>
+      )}
+
+      {featuredProjects.length > 0 && (
+        <div className="space-y-4">
+          <h3 className="text-lg font-bold text-slate-100">
+            Projetos em destaque
+          </h3>
+
+          <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
+            {featuredProjects.map(renderProjectCard)}
+          </div>
+        </div>
+      )}
+
+      {regularProjects.length > 0 && (
+        <div className="space-y-4">
+          {featuredProjects.length > 0 && (
+            <h3 className="text-lg font-bold text-slate-100">
+              Outros projetos
+            </h3>
+          )}
+
+          <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
+            {regularProjects.map(renderProjectCard)}
+          </div>
+        </div>
+      )}
+
+      {selectedProject && (
+        <div
+          className="fixed inset-0 z-50 grid place-items-center bg-black/80 p-4"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="project-modal-title"
+          onClick={() => setSelectedProject(null)}
+        >
+          <div
+            className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl border border-slate-800 bg-slate-900 p-6 shadow-2xl"
+            onClick={(event) => event.stopPropagation()}
           >
-            <div className="h-32 bg-gradient-to-br from-indigo-900 to-slate-900 p-4">
-              <span className="text-xs text-indigo-300">
-                {project.category}
-              </span>
-            </div>
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <span className="text-xs font-semibold uppercase tracking-wider text-indigo-400">
+                  {selectedProject.category || "Projeto"}
+                </span>
 
-            <div className="p-5">
-              <h3 className="font-bold">{project.title}</h3>
-
-              <p className="mt-2 text-sm text-slate-400">
-                {project.short_description}
-              </p>
-
-              <div className="flex flex-wrap gap-2 mt-4">
-                {project.technologies.map((technology) => (
-                  <span
-                    key={technology.id}
-                    className="px-2 py-1 rounded-md bg-slate-800 text-xs text-slate-300"
-                  >
-                    {technology.name}
-                  </span>
-                ))}
+                <h3
+                  id="project-modal-title"
+                  className="mt-1 text-xl font-bold text-slate-100"
+                >
+                  {selectedProject.title}
+                </h3>
               </div>
 
               <button
                 type="button"
-                onClick={() => setSelectedProject(project)}
-                className="mt-5 text-sm text-indigo-400 font-semibold"
+                onClick={() => setSelectedProject(null)}
+                className="rounded-lg p-2 text-slate-400 transition hover:bg-slate-800 hover:text-white"
+                aria-label="Fechar detalhes do projeto"
               >
-                Ver detalhes
-              </button>
-            </div>
-          </article>
-        ))}
-      </div>
-
-      {selectedProject && (
-        <div className="fixed inset-0 z-50 bg-black/80 p-4 grid place-items-center">
-          <div className="w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl bg-slate-900 border border-slate-800 p-6">
-            <div className="flex items-center justify-between gap-4">
-              <h3 className="text-xl font-bold">{selectedProject.title}</h3>
-
-              <button type="button" onClick={() => setSelectedProject(null)}>
-                <X />
+                <X className="h-5 w-5" />
               </button>
             </div>
 
-            <p className="mt-5 text-slate-300 leading-relaxed">
-              {selectedProject.long_description ||
-                selectedProject.short_description}
-            </p>
+            <div className="mt-5 flex flex-wrap items-center gap-3">
+              <span
+                className={`rounded-full border px-2.5 py-1 text-xs font-semibold ${getStatusClass(
+                  selectedProject.status,
+                )}`}
+              >
+                {getStatusLabel(selectedProject.status)}
+              </span>
 
-            <p className="mt-4 text-sm text-indigo-400">
-              Categoria: {selectedProject.category}
-            </p>
-
-            <div className="flex flex-wrap gap-2 mt-5">
-              {selectedProject.technologies.map((technology) => (
-                <span
-                  key={technology.id}
-                  className="px-2 py-1 rounded-md bg-slate-800 text-xs"
-                >
-                  {technology.name}
+              {formatPeriod(
+                selectedProject.start_date,
+                selectedProject.end_date,
+              ) && (
+                <span className="flex items-center gap-1.5 text-xs text-slate-400">
+                  <CalendarDays className="h-4 w-4" />
+                  {formatPeriod(
+                    selectedProject.start_date,
+                    selectedProject.end_date,
+                  )}
                 </span>
-              ))}
+              )}
             </div>
 
-            <div className="flex gap-4 mt-6">
+            <div className="mt-6">
+              <p className="whitespace-pre-line text-sm leading-relaxed text-slate-300">
+                {selectedProject.long_description ||
+                  selectedProject.short_description}
+              </p>
+            </div>
+
+            {(selectedProject.technologies || []).length > 0 && (
+              <div className="mt-6">
+                <h4 className="text-sm font-semibold text-slate-200">
+                  Tecnologias utilizadas
+                </h4>
+
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {selectedProject.technologies.map((technology) => (
+                    <span
+                      key={technology.id}
+                      className="rounded-md bg-slate-800 px-2.5 py-1 text-xs text-slate-300"
+                    >
+                      {technology.name}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <div className="mt-7 flex flex-wrap gap-3 border-t border-slate-800 pt-5">
               {selectedProject.repository_url && (
                 <a
                   href={selectedProject.repository_url}
                   target="_blank"
                   rel="noreferrer"
-                  className="flex items-center gap-2 text-sm text-slate-300"
+                  className="inline-flex items-center gap-2 rounded-lg bg-slate-800 px-4 py-2 text-sm font-semibold text-slate-200 transition hover:bg-slate-700"
                 >
-                  <FaGithub className="w-4 h-4" />
+                  <FaGithub className="h-4 w-4" />
                   Repositório
                 </a>
               )}
@@ -157,10 +349,10 @@ export function ProjectsSection({ projects }) {
                   href={selectedProject.demo_url}
                   target="_blank"
                   rel="noreferrer"
-                  className="flex items-center gap-2 text-sm text-indigo-400"
+                  className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-indigo-500"
                 >
-                  <ExternalLink className="w-4 h-4" />
-                  Demonstração
+                  <ExternalLink className="h-4 w-4" />
+                  Ver aplicação
                 </a>
               )}
             </div>
