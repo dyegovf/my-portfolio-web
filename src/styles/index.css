@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 html {
   scroll-behavior: smooth;
 }
@@ -7,15 +9,4 @@ html {
 body {
   margin: 0;
   min-width: 320px;
-  background: #020617;
-  font-family: Inter, system-ui, sans-serif;
-}
-
-button,
-a {
-  transition: all 0.2s ease;
-}
-
-button {
-  cursor: pointer;
 }

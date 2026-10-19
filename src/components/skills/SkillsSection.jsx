@@ -1,11 +1,11 @@
 import { SectionTitle } from "../common/SectionTitle";
 
-export function SkillsSection({ categories, skills }) {
+export function SkillsSection({ categories = [], skills = [] }) {
   return (
-    <section id="skills" className="space-y-8">
+    <section id="skills" className="scroll-mt-24 space-y-8">
       <SectionTitle eyebrow="Conhecimentos técnicos" title="Habilidades" />
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+      <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
         {categories.map((category) => {
           const categorySkills = skills.filter(
             (skill) => skill.category_id === category.id,
@@ -14,15 +14,17 @@ export function SkillsSection({ categories, skills }) {
           return (
             <article
               key={category.id}
-              className="p-6 rounded-2xl border border-slate-800 bg-slate-900"
+              className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition-colors dark:border-slate-800 dark:bg-slate-900"
             >
-              <h3 className="font-bold text-lg">{category.category}</h3>
+              <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100">
+                {category.category}
+              </h3>
 
-              <div className="flex flex-wrap gap-2 mt-5">
+              <div className="mt-5 flex flex-wrap gap-2">
                 {categorySkills.map((skill) => (
                   <span
                     key={skill.id}
-                    className="px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300 text-sm"
+                    className="rounded-lg bg-slate-100 px-3 py-1.5 text-sm text-slate-700 dark:bg-slate-800 dark:text-slate-300"
                   >
                     {skill.name}
                   </span>

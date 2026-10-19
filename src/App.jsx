@@ -1,5 +1,3 @@
-import { useState } from "react";
-
 import { usePortfolio } from "./hooks/usePortfolio";
 
 import { LoadingState } from "./components/common/LoadingState";
@@ -17,7 +15,6 @@ import { ContactSection } from "./components/contact/ContactSection";
 
 export default function App() {
   const { portfolio, loading, error } = usePortfolio();
-  const [darkMode, setDarkMode] = useState(true);
 
   if (loading) {
     return <LoadingState />;
@@ -28,14 +25,10 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100">
-      <Header
-        profile={portfolio.profile}
-        darkMode={darkMode}
-        onToggleTheme={() => setDarkMode((value) => !value)}
-      />
+    <div className="min-h-screen bg-slate-50 text-slate-900 transition-colors duration-300 dark:bg-slate-950 dark:text-slate-100">
+      <Header profile={portfolio.profile} />
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-24 py-12">
+      <main className="mx-auto max-w-7xl space-y-16 px-4 py-10 sm:px-6 lg:px-8">
         <HeroSection
           profile={portfolio.profile}
           socialLinks={portfolio.socialLinks}

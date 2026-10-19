@@ -32,6 +32,9 @@ function validateForm(form) {
   return errors;
 }
 
+const fieldClass =
+  "w-full rounded-lg border bg-white px-4 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-indigo-500 dark:bg-slate-950 dark:text-slate-100 dark:placeholder:text-slate-500";
+
 export function ContactForm() {
   const [form, setForm] = useState(initialForm);
   const [errors, setErrors] = useState({});
@@ -85,13 +88,13 @@ export function ContactForm() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="space-y-4 rounded-2xl border border-slate-800 bg-slate-900 p-6"
+      className="space-y-4 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900"
       noValidate
     >
       <div>
         <label
           htmlFor="sender_name"
-          className="mb-1.5 block text-sm font-medium text-slate-300"
+          className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300"
         >
           Seu nome
         </label>
@@ -102,20 +105,22 @@ export function ContactForm() {
           value={form.sender_name}
           onChange={handleChange}
           placeholder="Digite seu nome"
-          className={`w-full rounded-lg border bg-slate-950 px-4 py-3 text-sm text-slate-100 outline-none transition placeholder:text-slate-500 focus:border-indigo-500 ${
-            errors.sender_name ? "border-red-500" : "border-slate-800"
+          className={`${fieldClass} ${
+            errors.sender_name
+              ? "border-red-500"
+              : "border-slate-300 dark:border-slate-800"
           }`}
         />
 
         {errors.sender_name && (
-          <p className="mt-1 text-xs text-red-400">{errors.sender_name}</p>
+          <p className="mt-1 text-xs text-red-500">{errors.sender_name}</p>
         )}
       </div>
 
       <div>
         <label
           htmlFor="sender_email"
-          className="mb-1.5 block text-sm font-medium text-slate-300"
+          className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300"
         >
           Seu e-mail
         </label>
@@ -127,20 +132,22 @@ export function ContactForm() {
           value={form.sender_email}
           onChange={handleChange}
           placeholder="voce@exemplo.com"
-          className={`w-full rounded-lg border bg-slate-950 px-4 py-3 text-sm text-slate-100 outline-none transition placeholder:text-slate-500 focus:border-indigo-500 ${
-            errors.sender_email ? "border-red-500" : "border-slate-800"
+          className={`${fieldClass} ${
+            errors.sender_email
+              ? "border-red-500"
+              : "border-slate-300 dark:border-slate-800"
           }`}
         />
 
         {errors.sender_email && (
-          <p className="mt-1 text-xs text-red-400">{errors.sender_email}</p>
+          <p className="mt-1 text-xs text-red-500">{errors.sender_email}</p>
         )}
       </div>
 
       <div>
         <label
           htmlFor="subject"
-          className="mb-1.5 block text-sm font-medium text-slate-300"
+          className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300"
         >
           Assunto
         </label>
@@ -151,20 +158,22 @@ export function ContactForm() {
           value={form.subject}
           onChange={handleChange}
           placeholder="Como posso ajudar?"
-          className={`w-full rounded-lg border bg-slate-950 px-4 py-3 text-sm text-slate-100 outline-none transition placeholder:text-slate-500 focus:border-indigo-500 ${
-            errors.subject ? "border-red-500" : "border-slate-800"
+          className={`${fieldClass} ${
+            errors.subject
+              ? "border-red-500"
+              : "border-slate-300 dark:border-slate-800"
           }`}
         />
 
         {errors.subject && (
-          <p className="mt-1 text-xs text-red-400">{errors.subject}</p>
+          <p className="mt-1 text-xs text-red-500">{errors.subject}</p>
         )}
       </div>
 
       <div>
         <label
           htmlFor="message_text"
-          className="mb-1.5 block text-sm font-medium text-slate-300"
+          className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300"
         >
           Mensagem
         </label>
@@ -176,13 +185,15 @@ export function ContactForm() {
           value={form.message_text}
           onChange={handleChange}
           placeholder="Escreva sua mensagem..."
-          className={`w-full resize-y rounded-lg border bg-slate-950 px-4 py-3 text-sm text-slate-100 outline-none transition placeholder:text-slate-500 focus:border-indigo-500 ${
-            errors.message_text ? "border-red-500" : "border-slate-800"
+          className={`${fieldClass} resize-y ${
+            errors.message_text
+              ? "border-red-500"
+              : "border-slate-300 dark:border-slate-800"
           }`}
         />
 
         {errors.message_text && (
-          <p className="mt-1 text-xs text-red-400">{errors.message_text}</p>
+          <p className="mt-1 text-xs text-red-500">{errors.message_text}</p>
         )}
       </div>
 
@@ -195,15 +206,14 @@ export function ContactForm() {
       </button>
 
       {status === "success" && (
-        <p className="rounded-lg bg-emerald-500/10 p-3 text-sm text-emerald-400">
+        <p className="rounded-lg bg-emerald-100 p-3 text-sm text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400">
           Mensagem enviada com sucesso. Obrigado pelo contato!
         </p>
       )}
 
       {status === "submit_error" && (
-        <p className="rounded-lg bg-red-500/10 p-3 text-sm text-red-400">
-          Não foi possível enviar sua mensagem. Tente novamente em alguns
-          instantes.
+        <p className="rounded-lg bg-red-100 p-3 text-sm text-red-700 dark:bg-red-500/10 dark:text-red-400">
+          Não foi possível enviar sua mensagem. Tente novamente.
         </p>
       )}
     </form>
