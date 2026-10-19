@@ -1,11 +1,10 @@
-import { Icon } from "@iconify/react";
-
+import { DynamicIcon } from "../common/DynamicIcon";
 import { SectionTitle } from "../common/SectionTitle";
 
 export function ServicesSection({ services = [] }) {
-  const activeServices = services
+  const activeServices = [...services]
     .filter((service) => service.is_active !== false)
-    .sort((a, b) => a.display_order - b.display_order);
+    .sort((a, b) => (a.display_order ?? 0) - (b.display_order ?? 0));
 
   return (
     <section id="services" className="scroll-mt-24 space-y-8">
@@ -19,8 +18,9 @@ export function ServicesSection({ services = [] }) {
           >
             <div className="mb-5 flex items-center gap-3">
               <div className="rounded-xl bg-indigo-100 p-3 text-indigo-600 dark:bg-indigo-500/10 dark:text-indigo-400">
-                <Icon
-                  icon={service.icon_key || "mdi:briefcase-outline"}
+                <DynamicIcon
+                  name={service.icon_key}
+                  fallback="mdi:briefcase-outline"
                   className="h-6 w-6 transition-transform group-hover:scale-110"
                 />
               </div>
