@@ -6,6 +6,8 @@ export function usePortfolio() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  console.log("Dados do Portfolio carregados:", portfolio);
+
   useEffect(() => {
     async function loadPortfolio() {
       try {

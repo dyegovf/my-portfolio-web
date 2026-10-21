@@ -12,6 +12,8 @@
   "dependencies": {
     "@iconify/react": "^6.0.2",
     "@supabase/supabase-js": "^2.118.0",
+    "ant": "^0.0.0",
+    "antd": "^6.6.6",
     "lucide-react": "^1.59.0",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",

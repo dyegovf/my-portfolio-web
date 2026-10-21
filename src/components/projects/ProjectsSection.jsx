@@ -1,8 +1,8 @@
 import { useMemo, useState } from "react";
 import { CalendarDays, ExternalLink, X } from "lucide-react";
 import { FaGithub } from "react-icons/fa";
-
 import { SectionTitle } from "../common/SectionTitle";
+import { ProjectPreviewDrawer } from "./ProjectPreviewDrawer";
 
 function formatDate(date) {
   if (!date) {
