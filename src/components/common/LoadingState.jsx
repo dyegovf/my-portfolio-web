@@ -1,8 +1,12 @@
 import { Spin } from "antd";
 
-export function LoadingState() {
+export function LoadingState({ fullscreen = true }) {
+  const containerClass = fullscreen
+    ? "min-h-screen bg-slate-100 text-slate-950"
+    : "h-full min-h-150 w-full bg-transparent text-slate-950";
+
   return (
-    <div className="min-h-screen grid place-items-center bg-slate-100 text-slate-950">
+    <div className={`grid place-items-center ${containerClass}`}>
       <Spin description="Loading..." />
     </div>
   );

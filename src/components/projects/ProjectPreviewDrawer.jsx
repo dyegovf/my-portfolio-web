@@ -1,6 +1,7 @@
-import { Button, Drawer, Empty, Spin } from "antd";
+import { Button, Drawer, Empty } from "antd";
 import { useEffect, useState } from "react";
 import { DynamicIcon } from "../common/DynamicIcon";
+import { LoadingState } from "../common/LoadingState";
 
 export function ProjectPreviewDrawer({ project, open, onClose }) {
   const demoUrl = project?.demo_url?.trim() || "";
@@ -45,13 +46,8 @@ export function ProjectPreviewDrawer({ project, open, onClose }) {
       ) : (
         <div className="relative h-full min-h-150 w-full">
           {loading && !hasError && (
-            <div className="absolute inset-0 z-10 flex items-center justify-center bg-white">
-              <div className="flex flex-col items-center gap-3">
-                <Spin size="large" />
-                <span className="text-sm text-slate-500">
-                  Carregando aplicação...
-                </span>
-              </div>
+            <div className="absolute inset-0 z-10">
+              <LoadingState fullscreen={false} />
             </div>
           )}
 
