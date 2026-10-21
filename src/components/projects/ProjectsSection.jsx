@@ -61,6 +61,7 @@ export function ProjectsSection({ projects = [] }) {
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("Todos");
   const [selectedProject, setSelectedProject] = useState(null);
+  const [previewProject, setPreviewProject] = useState(null);
 
   const categories = useMemo(() => {
     const uniqueCategories = [
@@ -114,7 +115,7 @@ export function ProjectsSection({ projects = [] }) {
         key={project.id}
         className="flex flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:border-indigo-300 dark:border-slate-800 dark:bg-slate-900 dark:hover:border-indigo-500/50"
       >
-        <div className="flex min-h-32 flex-col justify-between bg-gradient-to-br from-indigo-100 to-slate-100 p-4 dark:from-indigo-900 dark:to-slate-900">
+        <div className="flex min-h-32 flex-col justify-between bg-linear-to-br from-indigo-100 to-slate-100 p-4 dark:from-indigo-900 dark:to-slate-900">
           <div className="flex items-start justify-between gap-3">
             <span className="w-fit rounded-full bg-white/80 px-2.5 py-1 text-xs text-indigo-700 dark:bg-black/30 dark:text-indigo-200">
               {project.category || "Projeto"}
@@ -175,15 +176,14 @@ export function ProjectsSection({ projects = [] }) {
             </button>
 
             {project.demo_url && (
-              <a
-                href={project.demo_url}
-                target="_blank"
-                rel="noreferrer"
+              <button
+                type="button"
+                onClick={() => setPreviewProject(project)}
                 className="inline-flex items-center gap-1.5 text-sm font-semibold text-indigo-600 transition hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300"
               >
                 <ExternalLink className="h-4 w-4" />
                 Ver aplicação
-              </a>
+              </button>
             )}
           </div>
         </div>
@@ -354,20 +354,28 @@ export function ProjectsSection({ projects = [] }) {
               )}
 
               {selectedProject.demo_url && (
-                <a
-                  href={selectedProject.demo_url}
-                  target="_blank"
-                  rel="noreferrer"
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSelectedProject(null);
+                    setPreviewProject(selectedProject);
+                  }}
                   className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-indigo-500"
                 >
                   <ExternalLink className="h-4 w-4" />
                   Ver aplicação
-                </a>
+                </button>
               )}
             </div>
           </div>
         </div>
       )}
+
+      <ProjectPreviewDrawer
+        project={previewProject}
+        open={Boolean(previewProject)}
+        onClose={() => setPreviewProject(null)}
+      />
     </section>
   );
 }

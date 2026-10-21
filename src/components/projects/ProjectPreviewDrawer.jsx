@@ -1,16 +1,20 @@
 import { Button, Drawer, Empty, Spin } from "antd";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { DynamicIcon } from "../common/DynamicIcon";
 
 export function ProjectPreviewDrawer({ project, open, onClose }) {
-  const [loading, setLoading] = useState(true);
+  const demoUrl = project?.demo_url?.trim() || "";
+  const [loading, setLoading] = useState(Boolean(demoUrl));
   const [hasError, setHasError] = useState(false);
+
+  useEffect(() => {
+    setLoading(Boolean(demoUrl));
+    setHasError(false);
+  }, [demoUrl, project?.id]);
 
   if (!project) {
     return null;
   }
-
-  const demoUrl = project.demo_url?.trim();
 
   return (
     <Drawer
@@ -19,7 +23,7 @@ export function ProjectPreviewDrawer({ project, open, onClose }) {
       width="min(100vw, 1200px)"
       onClose={onClose}
       open={open}
-      destroyOnClose
+      destroyOnHidden
       styles={{
         body: {
           padding: 0,
@@ -35,12 +39,12 @@ export function ProjectPreviewDrawer({ project, open, onClose }) {
       }
     >
       {!demoUrl ? (
-        <div className="flex h-full min-h-[500px] items-center justify-center p-8">
+        <div className="flex h-full min-h-125 items-center justify-center p-8">
           <Empty description="Este projeto ainda não possui uma demonstração online." />
         </div>
       ) : (
-        <div className="relative h-full min-h-[600px] w-full">
-          {loading && !hasError ? (
+        <div className="relative h-full min-h-150 w-full">
+          {loading && !hasError && (
             <div className="absolute inset-0 z-10 flex items-center justify-center bg-white">
               <div className="flex flex-col items-center gap-3">
                 <Spin size="large" />
@@ -49,10 +53,10 @@ export function ProjectPreviewDrawer({ project, open, onClose }) {
                 </span>
               </div>
             </div>
-          ) : null}
+          )}
 
           {hasError ? (
-            <div className="flex h-full min-h-[500px] items-center justify-center p-8">
+            <div className="flex h-full min-h-125 items-center justify-center p-8">
               <Empty
                 image={
                   <DynamicIcon
@@ -74,9 +78,10 @@ export function ProjectPreviewDrawer({ project, open, onClose }) {
             </div>
           ) : (
             <iframe
+              key={`${project.id}-${demoUrl}`}
               title={`Demonstração de ${project.title}`}
               src={demoUrl}
-              className="h-full min-h-[600px] w-full border-0"
+              className="h-full min-h-150 w-full border-0"
               loading="lazy"
               referrerPolicy="strict-origin-when-cross-origin"
               sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
