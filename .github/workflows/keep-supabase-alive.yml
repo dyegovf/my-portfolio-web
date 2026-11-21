@@ -13,4 +13,4 @@ jobs:
         run: |
           curl --fail -s -o /dev/null -w "%{http_code}\n" \
             -H "apikey: ${{ secrets.SUPABASE_ANON_KEY }}" \
-            "${{ secrets.SUPABASE_URL }}/rest/v1/"
+            "${{ secrets.SUPABASE_URL }}/rest/v1/profile?select=id&limit=1"
