@@ -1,0 +1,19 @@
+name: Manter Supabase Ativo
+
+on:
+  schedule:
+    # Roda a cada 3 dias às 10:00 UTC (7:00 da manhã no horário de Brasília)
+    - cron: "0 10 */3 * *"
+  # Permite rodar manualmente para testar
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping na API do Supabase
+        run: |
+          curl -s -o /dev/null -w "%{http_code}\n" \
+            -H "apikey: ${{ secrets.SUPABASE_ANON_KEY }}" \
+            -H "Authorization: Bearer ${{ secrets.SUPABASE_ANON_KEY }}" \
+            "${{ secrets.SUPABASE_URL }}/rest/v1/"
