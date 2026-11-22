@@ -1,13 +1,10 @@
 import { usePortfolio } from "./hooks/usePortfolio";
-
 import { LoadingState } from "./components/common/LoadingState";
 import { ErrorState } from "./components/common/ErrorState";
-
 import { Header } from "./components/layout/Header";
 import { Footer } from "./components/layout/Footer";
 import { HeroSection } from "./components/hero/HeroSection";
 import { ServicesSection } from "./components/services/ServicesSection";
-import { SkillsSection } from "./components/skills/SkillsSection";
 import { ProjectsSection } from "./components/projects/ProjectsSection";
 import { ExperienceSection } from "./components/experience/ExperienceSection";
 import { EducationSection } from "./components/education/EducationSection";
@@ -35,10 +32,10 @@ export default function App() {
           socialLinks={portfolio.socialLinks}
         />
 
-        <ServicesSection services={portfolio.services} />
+        <EducationSection education={portfolio.education} />
 
-        <SkillsSection
-          categories={portfolio.skillCategories}
+        <ServicesSection
+          services={portfolio.services}
           skills={portfolio.skills}
         />
 
@@ -46,9 +43,7 @@ export default function App() {
 
         <ExperienceSection experiences={portfolio.experiences} />
 
-        <EducationSection education={portfolio.education} />
-
-        <ContactSection profile={portfolio.profile} />
+        {/* <ContactSection profile={portfolio.profile} /> */}
       </main>
 
       <Footer profile={portfolio.profile} />

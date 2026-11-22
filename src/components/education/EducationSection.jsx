@@ -27,10 +27,6 @@ export function EducationSection({ education = [] }) {
             <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
               {item.field_of_study}
             </p>
-
-            <p className="mt-3 text-sm text-slate-600 dark:text-slate-400">
-              {item.description}
-            </p>
           </article>
         ))}
       </div>
