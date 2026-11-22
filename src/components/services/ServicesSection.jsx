@@ -4,13 +4,12 @@ import { DynamicIcon } from "../common/DynamicIcon";
 import { SectionTitle } from "../common/SectionTitle";
 import { useTheme } from "../../context/ThemeContext";
 
-// Mapeia o ID do Serviço para os IDs exatos das Skills da sua tabela "skills"
 const SERVICE_SKILLS = {
-  1: new Set(Array.of(1, 2, 3, 4, 5, 9, 15)), // Full-Stack: React, Vite, Tailwind, JS, Node, PostgreSQL, Git
-  2: new Set(Array.of(5, 6, 7, 10, 19, 8)), // APIs: Node, Python, Apps Script, Sheets API, Requests, SQL
-  3: new Set(Array.of(6, 18, 19, 14, 8, 9)), // Python/ETL: Python, BeautifulSoup4, Requests, Power Query, SQL, PostgreSQL
-  4: new Set(Array.of(12, 11, 14, 13, 8, 10)), // Dashboards/BI: Power BI, Excel, Power Query, VBA, SQL, Sheets API
-  5: new Set(Array.of(20, 21, 4, 9, 15, 16, 17)), // Sustentação: AngularJS, jQuery, JS, PostgreSQL, Git, Render, Vercel
+  1: new Set(Array.of(1, 2, 3, 4, 5, 9, 15)),
+  2: new Set(Array.of(5, 6, 7, 10, 19, 8)),
+  3: new Set(Array.of(6, 18, 19, 14, 8, 9)),
+  4: new Set(Array.of(12, 11, 14, 13, 8, 10)),
+  5: new Set(Array.of(20, 21, 4, 9, 15, 16, 17)),
 };
 
 export function ServicesSection({ services = [], skills = [] }) {
@@ -23,11 +22,7 @@ export function ServicesSection({ services = [], skills = [] }) {
 
   const relatedSkills = selectedService
     ? skills
-        .filter(
-          (skill) =>
-            skill.is_active !== false &&
-            SERVICE_SKILLS[selectedService.id]?.has(skill.id),
-        )
+        .filter((skill) => SERVICE_SKILLS[selectedService.id]?.has(skill.id))
         .sort((a, b) => (a.display_order ?? 0) - (b.display_order ?? 0))
     : [];
 
@@ -61,24 +56,25 @@ export function ServicesSection({ services = [], skills = [] }) {
         ))}
       </div>
 
-      <ConfigProvider
-        theme={{
-          algorithm: darkMode ? theme.darkAlgorithm : theme.defaultAlgorithm,
-          token: {
-            colorBgElevated: darkMode ? "#0f172a" : "#ffffff",
-            borderRadiusLG: 16,
-          },
-        }}
-      >
-        <Modal
-          open={Boolean(selectedService)}
-          onCancel={() => setSelectedService(null)}
-          footer={null}
-          centered
-          width={540}
-          title={
-            selectedService && (
-              <div className="flex items-center gap-3 pt-1">
+      {selectedService && (
+        <ConfigProvider
+          theme={{
+            algorithm: darkMode ? theme.darkAlgorithm : theme.defaultAlgorithm,
+            token: {
+              colorBgElevated: darkMode ? "#0f172a" : "#ffffff",
+              borderRadiusLG: 16,
+            },
+          }}
+        >
+          <Modal
+            open={true}
+            onCancel={() => setSelectedService(null)}
+            footer={null}
+            centered
+            width={540}
+          >
+            <div className="space-y-3.5 pt-1">
+              <div className="flex items-center gap-3 pr-6">
                 <div className="rounded-xl bg-indigo-100 p-2.5 text-indigo-600 dark:bg-indigo-500/15 dark:text-indigo-400">
                   <DynamicIcon
                     name={selectedService.icon_key}
@@ -86,63 +82,48 @@ export function ServicesSection({ services = [], skills = [] }) {
                     className="h-5 w-5"
                   />
                 </div>
-                <span className="text-base font-bold text-slate-900 dark:text-slate-100">
+                <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">
                   {selectedService.title}
-                </span>
+                </h3>
               </div>
-            )
-          }
-        >
-          {selectedService && (
-            <div className="pt-2">
-              {selectedService.short_description && (
-                <p className="text-sm font-medium text-indigo-600 dark:text-indigo-400">
-                  {selectedService.short_description}
-                </p>
-              )}
 
-              {selectedService.short_description &&
-                selectedService.description && (
-                  <Divider className="my-3.5 border-slate-200 dark:border-slate-800" />
-                )}
+              <p className="text-sm font-medium text-indigo-600 dark:text-indigo-400">
+                {selectedService.short_description}
+              </p>
 
-              {selectedService.description && (
-                <p className="text-sm leading-relaxed text-slate-600 dark:text-slate-300">
-                  {selectedService.description}
-                </p>
-              )}
+              <Divider className="my-3 border-slate-200 dark:border-slate-800" />
 
-              {relatedSkills.length > 0 && (
-                <>
-                  <Divider className="my-4 border-slate-200 dark:border-slate-800" />
+              <p className="text-sm leading-relaxed text-slate-600 dark:text-slate-300">
+                {selectedService.description}
+              </p>
 
-                  <div className="space-y-3">
-                    <span className="block text-xs font-bold tracking-wider text-slate-500 uppercase dark:text-slate-400">
-                      Tecnologias & Ferramentas
+              <Divider className="my-3 border-slate-200 dark:border-slate-800" />
+
+              <div className="space-y-2.5">
+                <span className="block text-xs font-bold tracking-wider text-slate-500 uppercase dark:text-slate-400">
+                  Tecnologias & Ferramentas
+                </span>
+
+                <div className="flex flex-wrap gap-2">
+                  {relatedSkills.map((skill) => (
+                    <span
+                      key={skill.id}
+                      className="inline-flex items-center gap-2 rounded-lg bg-slate-100/80 px-3 py-1.5 text-xs font-medium text-slate-700 dark:bg-slate-800/70 dark:text-slate-200"
+                    >
+                      <DynamicIcon
+                        name={skill.icon_key}
+                        fallback="mdi:tools"
+                        className="h-4 w-4 shrink-0"
+                      />
+                      {skill.name}
                     </span>
-
-                    <div className="flex flex-wrap gap-2">
-                      {relatedSkills.map((skill) => (
-                        <span
-                          key={skill.id}
-                          className="inline-flex items-center gap-2 rounded-lg bg-slate-100/80 px-3 py-1.5 text-xs font-medium text-slate-700 dark:bg-slate-800/70 dark:text-slate-200"
-                        >
-                          <DynamicIcon
-                            name={skill.icon_key}
-                            fallback="mdi:tools"
-                            className="h-4 w-4 shrink-0"
-                          />
-                          {skill.name}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                </>
-              )}
+                  ))}
+                </div>
+              </div>
             </div>
-          )}
-        </Modal>
-      </ConfigProvider>
+          </Modal>
+        </ConfigProvider>
+      )}
     </section>
   );
 }
