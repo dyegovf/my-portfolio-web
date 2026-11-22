@@ -4,12 +4,13 @@ import { DynamicIcon } from "../common/DynamicIcon";
 import { SectionTitle } from "../common/SectionTitle";
 import { useTheme } from "../../context/ThemeContext";
 
-const SERVICE_CATEGORIES = {
-  1: new Set(Array.of(1, 2, 3)), // Full-Stack -> Front-End (1), Back-End (2), Banco de Dados (3)
-  2: new Set(Array.of(2, 3)), // APIs -> Back-End (2), Banco de Dados (3)
-  3: new Set(Array.of(2, 3, 4)), // Python/ETL -> Back-End (2), Banco de Dados (3), Automação/BI (4)
-  4: new Set(Array.of(3, 4)), // Dashboards/BI -> Banco de Dados (3), Automação/BI (4)
-  5: new Set(Array.of(1, 2, 5, 6)), // Sustentação -> Front-End (1), Back-End (2), Cloud/DevOps (5), ITSM (6)
+// Mapeia o ID do Serviço para os IDs exatos das Skills da sua tabela "skills"
+const SERVICE_SKILLS = {
+  1: new Set(Array.of(1, 2, 3, 4, 5, 9, 15)), // Full-Stack: React, Vite, Tailwind, JS, Node, PostgreSQL, Git
+  2: new Set(Array.of(5, 6, 7, 10, 19, 8)), // APIs: Node, Python, Apps Script, Sheets API, Requests, SQL
+  3: new Set(Array.of(6, 18, 19, 14, 8, 9)), // Python/ETL: Python, BeautifulSoup4, Requests, Power Query, SQL, PostgreSQL
+  4: new Set(Array.of(12, 11, 14, 13, 8, 10)), // Dashboards/BI: Power BI, Excel, Power Query, VBA, SQL, Sheets API
+  5: new Set(Array.of(20, 21, 4, 9, 15, 16, 17)), // Sustentação: AngularJS, jQuery, JS, PostgreSQL, Git, Render, Vercel
 };
 
 export function ServicesSection({ services = [], skills = [] }) {
@@ -25,7 +26,7 @@ export function ServicesSection({ services = [], skills = [] }) {
         .filter(
           (skill) =>
             skill.is_active !== false &&
-            SERVICE_CATEGORIES[selectedService.id]?.has(skill.category_id),
+            SERVICE_SKILLS[selectedService.id]?.has(skill.id),
         )
         .sort((a, b) => (a.display_order ?? 0) - (b.display_order ?? 0))
     : [];
